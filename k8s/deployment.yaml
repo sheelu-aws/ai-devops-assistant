@@ -19,6 +19,16 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
+              
+          envFrom:
+            - configMapRef:
+                name: ai-devops-config
+          env:
+            - name: DEMO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-devops-secret
+                  key: DEMO_API_KEY
           livenessProbe:
             httpGet:
               path: /health
