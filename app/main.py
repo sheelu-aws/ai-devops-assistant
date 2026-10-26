@@ -204,3 +204,34 @@ def get_incidents(
         "count": len(incidents),
         "incidents": incidents
     }
+
+@app.get("/incidents/summary")
+def get_incident_summary():
+    with storage_lock:
+        incidents = load_incidents()
+
+    category_counts = {}
+    environment_counts = {}
+
+    for incident in incidents:
+        category = incident["analysis"]["category"]
+        environment = incident["environment"]
+
+        category_counts[category] = category_counts.get(category, 0) + 1
+
+        environment = environment.lower()
+        environment_counts[environment] = (
+            environment_counts.get(environment, 0) + 1
+        )
+
+    production_count = sum(
+        1 for incident in incidents
+        if incident["environment"].lower() == "production"
+    )
+
+    return {
+        "total_incidents": len(incidents),
+        "production_incidents": production_count,
+        "by_category": category_counts,
+        "by_environment": environment_counts
+    }

@@ -109,4 +109,22 @@ def test_filter_incidents_by_category():
         for incident in data["incidents"]
     )
 
+def test_incident_summary():
+    response = client.get("/incidents/summary")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "total_incidents" in data
+    assert "production_incidents" in data
+    assert "by_category" in data
+    assert "by_environment" in data
+
+    assert data["total_incidents"] == sum(
+        data["by_category"].values()
+    )
+
+    assert data["production_incidents"] <= data["total_incidents"]
+
 
