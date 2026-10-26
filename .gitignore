@@ -3,3 +3,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Local offline Python packages
+wheelhouse/
+wheelhouse312/

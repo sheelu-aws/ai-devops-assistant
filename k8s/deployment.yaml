@@ -17,31 +17,35 @@ spec:
         - name: ai-devops-assistant
           image: ai-devops-assistant:1.1
           imagePullPolicy: IfNotPresent
+
           ports:
             - containerPort: 8000
-              
+
           envFrom:
             - configMapRef:
                 name: ai-devops-config
+
           env:
             - name: DEMO_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: ai-devops-secret
                   key: DEMO_API_KEY
+
           livenessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 10
+
           readinessProbe:
             httpGet:
               path: /health
               port: 8000
             initialDelaySeconds: 5
             periodSeconds: 5
-      
+
           resources:
             requests:
               cpu: "100m"
@@ -49,3 +53,12 @@ spec:
             limits:
               cpu: "500m"
               memory: "256Mi"
+
+          volumeMounts:
+            - name: app-storage
+              mountPath: /app/data
+
+      volumes:
+        - name: app-storage
+          persistentVolumeClaim:
+            claimName: ai-devops-pvc
