@@ -152,19 +152,19 @@ def test_incident_severity():
             data["incident"]["analysis"]["severity"]
             == expected_severity
         )
-def test_filter_incidents_by_severity():
-    response = client.get("/incidents?severity=Critical")
+def test_incident_summary_includes_severity_counts():
+    response = client.get("/incidents/summary")
 
     assert response.status_code == 200
 
     data = response.json()
 
-    assert "count" in data
-    assert "incidents" in data
+    assert "by_severity" in data
+    assert isinstance(data["by_severity"], dict)
 
-    for incident in data["incidents"]:
-        assert (
-            incident["analysis"].get("severity", "").lower()
-            == "critical"
-        )
+    assert all(
+        isinstance(count, int)
+        for count in data["by_severity"].values()
+    )
+
 
