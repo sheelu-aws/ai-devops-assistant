@@ -187,7 +187,8 @@ def create_incident(incident: Incident):
 @app.get("/incidents")
 def get_incidents(
     environment: str | None = None,
-    category: str | None = None
+    category: str | None = None,
+    severity: str | None = None
 ):
     with storage_lock:
         incidents = load_incidents()
@@ -202,6 +203,12 @@ def get_incidents(
         incidents = [
             incident for incident in incidents
             if incident["analysis"]["category"].lower() == category.lower()
+        ]
+    if severity:
+        incidents = [
+            incident for incident in incidents
+            if incident["analysis"].get("severity", "").lower()
+            == severity.lower()
         ]
 
     return {
