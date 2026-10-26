@@ -127,4 +127,30 @@ def test_incident_summary():
 
     assert data["production_incidents"] <= data["total_incidents"]
 
+def test_incident_severity():
+    cases = [
+        ("502 Bad Gateway", "High"),
+        ("High CPU usage", "High"),
+        ("Out of memory", "Critical"),
+        ("Unexpected application behavior", "Medium"),
+    ]
+
+    for problem, expected_severity in cases:
+        response = client.post(
+            "/incident",
+            json={
+                "application": "severity-test-service",
+                "problem": problem,
+                "environment": "production",
+            },
+        )
+
+        assert response.status_code == 200
+
+        data = response.json()
+        assert (
+            data["incident"]["analysis"]["severity"]
+            == expected_severity
+        )
+
 

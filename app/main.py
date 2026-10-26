@@ -83,6 +83,7 @@ def analyze_incident(problem: str):
     if "502" in problem_lower or "bad gateway" in problem_lower:
         return {
             "category": "Gateway Error",
+            "severity": "High",
             "possible_causes": [
                 "Backend service is unavailable",
                 "Application is returning errors",
@@ -99,6 +100,7 @@ def analyze_incident(problem: str):
     if "cpu" in problem_lower or "high load" in problem_lower:
         return {
             "category": "High CPU",
+            "severity": "High",
             "possible_causes": [
                 "Heavy application workload",
                 "Inefficient code or repeated requests",
@@ -115,6 +117,7 @@ def analyze_incident(problem: str):
     if "out of memory" in problem_lower or "oom" in problem_lower:
         return {
             "category": "Memory Issue",
+            "severity": "Critical",
             "possible_causes": [
                 "Application memory usage is too high",
                 "Container memory limit was exceeded"
@@ -129,6 +132,7 @@ def analyze_incident(problem: str):
 
     return {
         "category": "Unknown Incident",
+        "severity": "Medium",
         "possible_causes": [
             "The problem needs further investigation"
         ],
