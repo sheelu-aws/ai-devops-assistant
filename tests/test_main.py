@@ -86,3 +86,27 @@ def test_unknown_incident():
     assert response.status_code == 200
     assert response.json()["incident"]["analysis"]["category"] == "Unknown Incident"
 
+def test_filter_incidents_by_environment():
+    response = client.get("/incidents?environment=production")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["count"] >= 1
+    assert all(
+        incident["environment"].lower() == "production"
+        for incident in data["incidents"]
+    )
+
+
+def test_filter_incidents_by_category():
+    response = client.get("/incidents?category=Gateway%20Error")
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["count"] >= 1
+    assert all(
+        incident["analysis"]["category"].lower() == "gateway error"
+        for incident in data["incidents"]
+    )
+
+
