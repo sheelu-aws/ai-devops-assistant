@@ -224,11 +224,16 @@ def get_incident_summary():
     category_counts = {}
     environment_counts = {}
     severity_counts = {}
+    application_counts = {}
 
     for incident in incidents:
+        
         category = incident["analysis"]["category"]
         environment = incident["environment"]
-
+        application = incident["application"]
+        application_counts[application] = (
+            application_counts.get(application, 0) + 1
+        )
         category_counts[category] = category_counts.get(category, 0) + 1
 
         environment = environment.lower()
@@ -247,9 +252,10 @@ def get_incident_summary():
     )
 
     return {
-        "total_incidents": len(incidents),
-        "production_incidents": production_count,
-        "by_category": category_counts,
-        "by_environment": environment_counts,
-        "by_severity": severity_counts
-    }
+    "total_incidents": len(incidents),
+    "production_incidents": production_count,
+    "by_category": category_counts,
+    "by_environment": environment_counts,
+    "by_severity": severity_counts,
+    "by_application": application_counts
+}

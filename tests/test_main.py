@@ -166,5 +166,19 @@ def test_incident_summary_includes_severity_counts():
         isinstance(count, int)
         for count in data["by_severity"].values()
     )
+def test_incident_summary_includes_application_counts():
+    response = client.get("/incidents/summary")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "by_application" in data
+    assert isinstance(data["by_application"], dict)
+
+    assert all(
+        isinstance(count, int)
+        for count in data["by_application"].values()
+    )
 
 
