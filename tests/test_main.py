@@ -1,3 +1,9 @@
+
+import os
+import tempfile
+
+os.environ["DATA_DIR"] = tempfile.mkdtemp(prefix="incident-tests-")
+
 from fastapi.testclient import TestClient
 from app.main import app
 client = TestClient(app)
@@ -27,10 +33,10 @@ def test_create_incident():
 
     data = response.json()
 
-    assert data["message"] == "Incident analyzed"
+    assert data["message"] == "Incident analyzed and saved"
     assert data["incident"]["application"] == "payment-service"
-    assert data["analysis"]["category"] == "Gateway Error"
-    assert len(data["analysis"]["recommended_actions"]) > 0
+    assert data["incident"]["analysis"]["category"] == "Gateway Error"
+    assert len(data["incident"]["analysis"]["recommended_actions"]) > 0
 
 def test_incident_missing_environment():
     incident = {
@@ -52,7 +58,7 @@ def test_high_cpu_incident():
     response = client.post("/incident", json=incident)
 
     assert response.status_code == 200
-    assert response.json()["analysis"]["category"] == "High CPU"
+    assert response.json()["incident"]["analysis"]["category"] == "High CPU"
 
 
 def test_memory_incident():
@@ -65,7 +71,7 @@ def test_memory_incident():
     response = client.post("/incident", json=incident)
 
     assert response.status_code == 200
-    assert response.json()["analysis"]["category"] == "Memory Issue"
+    assert response.json()["incident"]["analysis"]["category"] == "Memory Issue"
 
 
 def test_unknown_incident():
@@ -78,4 +84,5 @@ def test_unknown_incident():
     response = client.post("/incident", json=incident)
 
     assert response.status_code == 200
-    assert response.json()["analysis"]["category"] == "Unknown Incident"
+    assert response.json()["incident"]["analysis"]["category"] == "Unknown Incident"
+
