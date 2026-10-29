@@ -180,5 +180,21 @@ def test_incident_summary_includes_application_counts():
         isinstance(count, int)
         for count in data["by_application"].values()
     )
+def test_create_incident_returns_retrieved_knowledge():
+    incident = {
+        "application": "payment-service",
+        "problem": "HTTP 502 Bad Gateway",
+        "environment": "production"
+    }
+
+    response = client.post("/incident", json=incident)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "retrieved_knowledge" in data
+    assert len(data["retrieved_knowledge"]) > 0
+    assert "HTTP 502 Bad Gateway" in data["retrieved_knowledge"][0]
 
 

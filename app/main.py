@@ -3,11 +3,12 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from pathlib import Path
+
 import json
 import os
 import threading
 import uuid
-
+from app.retrieval import retrieve_knowledge
 APP_NAME = os.getenv(
     "APP_NAME",
     "AI DevOps Incident Assistant"
@@ -161,7 +162,7 @@ def health():
 @app.post("/incident")
 def create_incident(incident: Incident):
     analysis = analyze_incident(incident.problem)
-
+    retrieved_knowledge = retrieve_knowledge(incident.problem)
     with storage_lock:
         incidents = load_incidents()
 
@@ -178,8 +179,9 @@ def create_incident(incident: Incident):
         save_incidents(incidents)
 
     return {
-        "message": "Incident analyzed and saved",
-        "incident": record
+    "message": "Incident analyzed and saved",
+    "incident": record,
+    "retrieved_knowledge": retrieved_knowledge
     }
 
 
