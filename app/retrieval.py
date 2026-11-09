@@ -1,11 +1,19 @@
 from pathlib import Path
 import re
 
+from sentence_transformers import SentenceTransformer, util
+
 KNOWLEDGE_FILE = (
     Path(__file__).resolve().parent.parent
     / "knowledge"
     / "devops_troubleshooting.md"
 )
+
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+_model = None
+_documents = None
+_embeddings = None
 
 
 def load_knowledge():
@@ -15,34 +23,49 @@ def load_knowledge():
     content = KNOWLEDGE_FILE.read_text(encoding="utf-8")
     sections = re.split(r"(?m)^## ", content)[1:]
 
-    documents = []
+    return [
+        section.strip()
+        for section in sections
+        if section.strip()
+    ]
 
-    for section in sections:
-        section = section.strip()
-        if section:
-            documents.append(section)
 
-    return documents
+def _get_model():
+    global _model
+
+    if _model is None:
+        _model = SentenceTransformer(MODEL_NAME, device="cpu")
+
+    return _model
 
 
 def retrieve_knowledge(query: str, top_k: int = 2):
-    documents = load_knowledge()
-    query_words = set(re.findall(r"\b[a-z0-9]+\b", query.lower()))
+    global _documents, _embeddings
 
-    scored_documents = []
+    if not query or not query.strip():
+        return []
 
-    for document in documents:
-        document_words = set(
-            re.findall(r"\b[a-z0-9]+\b", document.lower())
+    if _documents is None:
+        _documents = load_knowledge()
+
+        if not _documents:
+            return []
+
+        _embeddings = _get_model().encode(
+            _documents,
+            convert_to_tensor=True
         )
-        score = len(query_words & document_words)
 
-        if score > 0:
-            scored_documents.append((score, document))
+    query_embedding = _get_model().encode(
+        query,
+        convert_to_tensor=True
+    )
 
-    scored_documents.sort(key=lambda item: item[0], reverse=True)
+    scores = util.cos_sim(query_embedding, _embeddings)[0]
+    ranked_indices = scores.argsort(descending=True).tolist()
 
     return [
-        document
-        for score, document in scored_documents[:top_k]
+        _documents[i]
+        for i in ranked_indices[:top_k]
+        if float(scores[i]) > 0.25
     ]

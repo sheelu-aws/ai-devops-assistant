@@ -81,7 +81,17 @@ def save_incidents(incidents):
 def analyze_incident(problem: str):
     problem_lower = problem.lower()
 
-    if "502" in problem_lower or "bad gateway" in problem_lower:
+    # Gateway and HTTP errors
+    if any(keyword in problem_lower for keyword in [
+        "502",
+        "bad gateway",
+        "gateway cannot connect",
+        "gateway cannot reach",
+        "backend unavailable",
+        "backend not responding",
+        "503",
+        "service unavailable"
+    ]):
         return {
             "category": "Gateway Error",
             "severity": "High",
@@ -98,7 +108,13 @@ def analyze_incident(problem: str):
             ]
         }
 
-    if "cpu" in problem_lower or "high load" in problem_lower:
+    # High CPU
+    if any(keyword in problem_lower for keyword in [
+        "cpu",
+        "high load",
+        "high utilization",
+        "processor usage"
+    ]):
         return {
             "category": "High CPU",
             "severity": "High",
@@ -115,7 +131,15 @@ def analyze_incident(problem: str):
             ]
         }
 
-    if "out of memory" in problem_lower or "oom" in problem_lower:
+    # Memory issues
+    if any(keyword in problem_lower for keyword in [
+        "out of memory",
+        "oom",
+        "oomkilled",
+        "memory leak",
+        "memory usage",
+        "memory limit"
+    ]):
         return {
             "category": "Memory Issue",
             "severity": "Critical",
@@ -131,6 +155,31 @@ def analyze_incident(problem: str):
             ]
         }
 
+    # Kubernetes image pull errors
+    if any(keyword in problem_lower for keyword in [
+        "imagepullbackoff",
+        "errimagepull",
+        "image pull failed",
+        "cannot pull image",
+        "failed to pull image"
+    ]):
+        return {
+            "category": "Image Pull Error",
+            "severity": "High",
+            "possible_causes": [
+                "Container image does not exist",
+                "Incorrect image name or tag",
+                "Registry authentication failure",
+                "Network connectivity issue"
+            ],
+            "recommended_actions": [
+                "Run kubectl describe pod",
+                "Verify image name and tag",
+                "Check registry credentials",
+                "Verify container registry connectivity"
+            ]
+        }
+
     return {
         "category": "Unknown Incident",
         "severity": "Medium",
@@ -143,7 +192,6 @@ def analyze_incident(problem: str):
             "Inspect service and resource metrics"
         ]
     }
-
 
 @app.get("/")
 def home():
