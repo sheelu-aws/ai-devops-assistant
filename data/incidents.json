@@ -1,0 +1,142 @@
+[
+  {
+    "id": "d8e88bb4-590d-4af8-912a-532fe7646c28",
+    "timestamp": "2026-11-13T16:02:26.557050+00:00",
+    "application": "payment-service",
+    "problem": "Website is unavailable because the gateway cannot connect to the backend",
+    "environment": "production",
+    "analysis": {
+      "category": "Gateway Error",
+      "severity": "High",
+      "possible_causes": [
+        "Backend service is unavailable",
+        "Application is returning errors",
+        "Proxy or ingress configuration issue"
+      ],
+      "recommended_actions": [
+        "Check application Pod status",
+        "Review application logs",
+        "Verify Service endpoints and ports",
+        "Check Ingress or proxy configuration"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: payment-service\nEnvironment: production\n\nReported Problem:\nWebsite is unavailable because the gateway cannot connect to the backend\n\nIncident Classification:\nGateway Error\n\nSeverity:\nHigh\n\nPossible Causes:\n- Backend service is unavailable\n- Application is returning errors\n- Proxy or ingress configuration issue\n\nRecommended Actions:\n- Check application Pod status\n- Review application logs\n- Verify Service endpoints and ports\n- Check Ingress or proxy configuration\n\n\nRelevant Troubleshooting Knowledge:\n\n1. HTTP 502 Bad Gateway\nSymptoms:\n- Users receive HTTP 502 errors.\n- The application may be unavailable behind a load balancer or ingress.\n\nPossible causes:\n- Backend application is not running.\n- Kubernetes pods are unhealthy.\n- Service points to the wrong port.\n- Ingress configuration is incorrect.\n\nTroubleshooting steps:\n1. Run kubectl get pods to check pod status.\n2. Run kubectl get services to verify service ports.\n3. Run kubectl describe ingress to inspect ingress configuration.\n4. Check application logs using kubectl logs.\n5. Verify the readiness probe and backend health endpoint.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  },
+  {
+    "id": "07a59b00-088c-4257-9285-d8a8b5b27a4d",
+    "timestamp": "2026-11-13T16:06:19.737693+00:00",
+    "application": "payment-service",
+    "problem": "Website is unavailable because the gateway cannot connect to the backend",
+    "environment": "production",
+    "analysis": {
+      "category": "Gateway Error",
+      "severity": "High",
+      "possible_causes": [
+        "Backend service is unavailable",
+        "Application is returning errors",
+        "Proxy or ingress configuration issue"
+      ],
+      "recommended_actions": [
+        "Check application Pod status",
+        "Review application logs",
+        "Verify Service endpoints and ports",
+        "Check Ingress or proxy configuration"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: payment-service\nEnvironment: production\n\nReported Problem:\nWebsite is unavailable because the gateway cannot connect to the backend\n\nIncident Classification:\nGateway Error\n\nSeverity:\nHigh\n\nPossible Causes:\n- Backend service is unavailable\n- Application is returning errors\n- Proxy or ingress configuration issue\n\nRecommended Actions:\n- Check application Pod status\n- Review application logs\n- Verify Service endpoints and ports\n- Check Ingress or proxy configuration\n\n\nRelevant Troubleshooting Knowledge:\n\n1. HTTP 502 Bad Gateway\nSymptoms:\n- Users receive HTTP 502 errors.\n- The application may be unavailable behind a load balancer or ingress.\n\nPossible causes:\n- Backend application is not running.\n- Kubernetes pods are unhealthy.\n- Service points to the wrong port.\n- Ingress configuration is incorrect.\n\nTroubleshooting steps:\n1. Run kubectl get pods to check pod status.\n2. Run kubectl get services to verify service ports.\n3. Run kubectl describe ingress to inspect ingress configuration.\n4. Check application logs using kubectl logs.\n5. Verify the readiness probe and backend health endpoint.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  },
+  {
+    "id": "b375f5ab-18e4-4f12-916a-4df2cb939b0a",
+    "timestamp": "2026-11-14T13:40:05.551269+00:00",
+    "application": "payment-service",
+    "problem": "Website is unavailable because the gateway cannot connect to the backend",
+    "environment": "production",
+    "analysis": {
+      "category": "Gateway Error",
+      "severity": "High",
+      "possible_causes": [
+        "Backend service is unavailable",
+        "Application is returning errors",
+        "Proxy or ingress configuration issue"
+      ],
+      "recommended_actions": [
+        "Check application Pod status",
+        "Review application logs",
+        "Verify Service endpoints and ports",
+        "Check Ingress or proxy configuration"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: payment-service\nEnvironment: production\n\nReported Problem:\nWebsite is unavailable because the gateway cannot connect to the backend\n\nIncident Classification:\nGateway Error\n\nSeverity:\nHigh\n\nPossible Causes:\n- Backend service is unavailable\n- Application is returning errors\n- Proxy or ingress configuration issue\n\nRecommended Actions:\n- Check application Pod status\n- Review application logs\n- Verify Service endpoints and ports\n- Check Ingress or proxy configuration\n\n\nRelevant Troubleshooting Knowledge:\n\n1. HTTP 502 Bad Gateway\nSymptoms:\n- Users receive HTTP 502 errors.\n- The application may be unavailable behind a load balancer or ingress.\n\nPossible causes:\n- Backend application is not running.\n- Kubernetes pods are unhealthy.\n- Service points to the wrong port.\n- Ingress configuration is incorrect.\n\nTroubleshooting steps:\n1. Run kubectl get pods to check pod status.\n2. Run kubectl get services to verify service ports.\n3. Run kubectl describe ingress to inspect ingress configuration.\n4. Check application logs using kubectl logs.\n5. Verify the readiness probe and backend health endpoint.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  },
+  {
+    "id": "84b1ce6b-837e-4f62-92bb-4bae95b71a93",
+    "timestamp": "2026-11-14T13:42:59.029426+00:00",
+    "application": "order-service",
+    "problem": "CPU utilization has reached 95% and the application response time is very slow",
+    "environment": "production",
+    "analysis": {
+      "category": "High CPU",
+      "severity": "High",
+      "possible_causes": [
+        "Heavy application workload",
+        "Inefficient code or repeated requests",
+        "Insufficient CPU resources"
+      ],
+      "recommended_actions": [
+        "Check kubectl top pods",
+        "Review application metrics and logs",
+        "Inspect CPU requests and limits",
+        "Check HPA scaling status"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: order-service\nEnvironment: production\n\nReported Problem:\nCPU utilization has reached 95% and the application response time is very slow\n\nIncident Classification:\nHigh CPU\n\nSeverity:\nHigh\n\nPossible Causes:\n- Heavy application workload\n- Inefficient code or repeated requests\n- Insufficient CPU resources\n\nRecommended Actions:\n- Check kubectl top pods\n- Review application metrics and logs\n- Inspect CPU requests and limits\n- Check HPA scaling status\n\n\nRelevant Troubleshooting Knowledge:\n\n2. High CPU Usage\nSymptoms:\n- Application response time increases.\n- CPU utilization stays unusually high.\n\nPossible causes:\n- Inefficient code or an infinite loop.\n- High request volume.\n- CPU limits are too low.\n- A background job is consuming resources.\n\nTroubleshooting steps:\n1. Run kubectl top pods to inspect CPU usage.\n2. Check application logs for repeated operations or errors.\n3. Review CPU requests and limits.\n4. Inspect traffic and recent deployments.\n5. Scale replicas if needed and after checking available resources.\n\n1. HTTP 502 Bad Gateway\nSymptoms:\n- Users receive HTTP 502 errors.\n- The application may be unavailable behind a load balancer or ingress.\n\nPossible causes:\n- Backend application is not running.\n- Kubernetes pods are unhealthy.\n- Service points to the wrong port.\n- Ingress configuration is incorrect.\n\nTroubleshooting steps:\n1. Run kubectl get pods to check pod status.\n2. Run kubectl get services to verify service ports.\n3. Run kubectl describe ingress to inspect ingress configuration.\n4. Check application logs using kubectl logs.\n5. Verify the readiness probe and backend health endpoint.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  },
+  {
+    "id": "f35a1c3c-2d9b-400a-bd5f-ac50dcc2d3ae",
+    "timestamp": "2026-11-14T16:25:48.595918+00:00",
+    "application": "order-service",
+    "problem": "Kubernetes pod is stuck in ImagePullBackOff because the container image cannot be downloaded from the registry",
+    "environment": "production",
+    "analysis": {
+      "category": "Image Pull Error",
+      "severity": "High",
+      "possible_causes": [
+        "Container image does not exist",
+        "Incorrect image name or tag",
+        "Registry authentication failure",
+        "Network connectivity issue"
+      ],
+      "recommended_actions": [
+        "Run kubectl describe pod",
+        "Verify image name and tag",
+        "Check registry credentials",
+        "Verify container registry connectivity"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: order-service\nEnvironment: production\n\nReported Problem:\nKubernetes pod is stuck in ImagePullBackOff because the container image cannot be downloaded from the registry\n\nIncident Classification:\nImage Pull Error\n\nSeverity:\nHigh\n\nPossible Causes:\n- Container image does not exist\n- Incorrect image name or tag\n- Registry authentication failure\n- Network connectivity issue\n\nRecommended Actions:\n- Run kubectl describe pod\n- Verify image name and tag\n- Check registry credentials\n- Verify container registry connectivity\n\n\nRelevant Troubleshooting Knowledge:\n\n4. Kubernetes ImagePullBackOff\nSymptoms:\n- A pod cannot start because its container image cannot be pulled.\n\nPossible causes:\n- Incorrect image name or tag.\n- Registry authentication failure.\n- Network or DNS connectivity issue.\n- Image is unavailable in the registry or local cluster.\n\nTroubleshooting steps:\n1. Run kubectl describe pod to inspect events.\n2. Verify the image name and tag in the deployment.\n3. Check registry credentials if the image is private.\n4. Verify node network and DNS connectivity.\n5. For a local kind cluster, confirm the image was loaded into the correct cluster.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  },
+  {
+    "id": "b64455ea-bf06-4a93-a20a-68a11022cfa0",
+    "timestamp": "2026-11-14T16:26:23.982589+00:00",
+    "application": "order-service",
+    "problem": "Kubernetes pod is stuck in ImagePullBackOff because the container image cannot be downloaded from the registry",
+    "environment": "production",
+    "analysis": {
+      "category": "Image Pull Error",
+      "severity": "High",
+      "possible_causes": [
+        "Container image does not exist",
+        "Incorrect image name or tag",
+        "Registry authentication failure",
+        "Network connectivity issue"
+      ],
+      "recommended_actions": [
+        "Run kubectl describe pod",
+        "Verify image name and tag",
+        "Check registry credentials",
+        "Verify container registry connectivity"
+      ]
+    },
+    "llm_response": "Incident Analysis Report\n\nApplication: order-service\nEnvironment: production\n\nReported Problem:\nKubernetes pod is stuck in ImagePullBackOff because the container image cannot be downloaded from the registry\n\nIncident Classification:\nImage Pull Error\n\nSeverity:\nHigh\n\nPossible Causes:\n- Container image does not exist\n- Incorrect image name or tag\n- Registry authentication failure\n- Network connectivity issue\n\nRecommended Actions:\n- Run kubectl describe pod\n- Verify image name and tag\n- Check registry credentials\n- Verify container registry connectivity\n\n\nRelevant Troubleshooting Knowledge:\n\n4. Kubernetes ImagePullBackOff\nSymptoms:\n- A pod cannot start because its container image cannot be pulled.\n\nPossible causes:\n- Incorrect image name or tag.\n- Registry authentication failure.\n- Network or DNS connectivity issue.\n- Image is unavailable in the registry or local cluster.\n\nTroubleshooting steps:\n1. Run kubectl describe pod to inspect events.\n2. Verify the image name and tag in the deployment.\n3. Check registry credentials if the image is private.\n4. Verify node network and DNS connectivity.\n5. For a local kind cluster, confirm the image was loaded into the correct cluster.\n\nSummary:\nThe incident has been analyzed using the available\nclassification rules and retrieved troubleshooting\nknowledge. Follow the recommended actions to\ninvestigate and resolve the issue."
+  }
+]
