@@ -1,7 +1,6 @@
+
 from pathlib import Path
 import re
-
-from sentence_transformers import SentenceTransformer, util
 
 KNOWLEDGE_FILE = (
     Path(__file__).resolve().parent.parent
@@ -9,18 +8,17 @@ KNOWLEDGE_FILE = (
     / "devops_troubleshooting.md"
 )
 
-MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-
-_model = None
 _documents = None
-_embeddings = None
 
 
 def load_knowledge():
+    """Load troubleshooting documents from the knowledge base."""
+
     if not KNOWLEDGE_FILE.exists():
         return []
 
     content = KNOWLEDGE_FILE.read_text(encoding="utf-8")
+
     sections = re.split(r"(?m)^## ", content)[1:]
 
     return [
@@ -30,17 +28,10 @@ def load_knowledge():
     ]
 
 
-def _get_model():
-    global _model
-
-    if _model is None:
-        _model = SentenceTransformer(MODEL_NAME, device="cpu")
-
-    return _model
-
-
 def retrieve_knowledge(query: str, top_k: int = 2):
-    global _documents, _embeddings
+    """Retrieve relevant documents using keyword matching."""
+
+    global _documents
 
     if not query or not query.strip():
         return []
@@ -48,24 +39,41 @@ def retrieve_knowledge(query: str, top_k: int = 2):
     if _documents is None:
         _documents = load_knowledge()
 
-        if not _documents:
-            return []
+    if not _documents:
+        return []
 
-        _embeddings = _get_model().encode(
-            _documents,
-            convert_to_tensor=True
-        )
-
-    query_embedding = _get_model().encode(
-        query,
-        convert_to_tensor=True
+    query_words = set(
+        re.findall(r"\b[a-zA-Z0-9]+\b", query.lower())
     )
 
-    scores = util.cos_sim(query_embedding, _embeddings)[0]
-    ranked_indices = scores.argsort(descending=True).tolist()
+    ranked_documents = []
+
+    for document in _documents:
+
+        document_words = set(
+            re.findall(
+                r"\b[a-zA-Z0-9]+\b",
+                document.lower()
+            )
+        )
+
+        matching_words = query_words.intersection(
+            document_words
+        )
+
+        score = len(matching_words)
+
+        if score > 0:
+            ranked_documents.append(
+                (score, document)
+            )
+
+    ranked_documents.sort(
+        key=lambda item: item[0],
+        reverse=True
+    )
 
     return [
-        _documents[i]
-        for i in ranked_indices[:top_k]
-        if float(scores[i]) > 0.25
+        document
+        for score, document in ranked_documents[:top_k]
     ]
