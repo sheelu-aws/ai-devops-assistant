@@ -9,6 +9,7 @@ import os
 import threading
 import uuid
 from app.retrieval import retrieve_knowledge
+from app.llm import generate_incident_response
 APP_NAME = os.getenv(
     "APP_NAME",
     "AI DevOps Incident Assistant"
@@ -19,7 +20,12 @@ APP_VERSION = os.getenv(
     "0.3.0"
 )
 
-DATA_DIR = Path(os.getenv("DATA_DIR", "/app/data"))
+DATA_DIR = Path(
+    os.getenv(
+        "DATA_DIR",
+        str(Path(__file__).resolve().parent.parent / "data")
+    )
+)
 INCIDENTS_FILE = DATA_DIR / "incidents.json"
 storage_lock = threading.Lock()
 
@@ -210,7 +216,20 @@ def health():
 @app.post("/incident")
 def create_incident(incident: Incident):
     analysis = analyze_incident(incident.problem)
+
     retrieved_knowledge = retrieve_knowledge(incident.problem)
+
+    # Generate incident report using mock LLM
+    llm_response = generate_incident_response(
+        incident={
+            "application": incident.application,
+            "problem": incident.problem,
+            "environment": incident.environment
+        },
+        analysis=analysis,
+        retrieved_knowledge=retrieved_knowledge
+    )
+
     with storage_lock:
         incidents = load_incidents()
 
@@ -220,18 +239,19 @@ def create_incident(incident: Incident):
             "application": incident.application,
             "problem": incident.problem,
             "environment": incident.environment,
-            "analysis": analysis
+            "analysis": analysis,
+            "llm_response": llm_response
         }
 
         incidents.append(record)
         save_incidents(incidents)
 
     return {
-    "message": "Incident analyzed and saved",
-    "incident": record,
-    "retrieved_knowledge": retrieved_knowledge
+        "message": "Incident analyzed and saved",
+        "incident": record,
+        "retrieved_knowledge": retrieved_knowledge,
+        "llm_response": llm_response
     }
-
 
 
 @app.get("/incidents")

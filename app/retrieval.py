@@ -64,8 +64,16 @@ def retrieve_knowledge(query: str, top_k: int = 2):
     scores = util.cos_sim(query_embedding, _embeddings)[0]
     ranked_indices = scores.argsort(descending=True).tolist()
 
-    return [
-        _documents[i]
-        for i in ranked_indices[:top_k]
-        if float(scores[i]) > 0.25
+    ranked_scores = [
+        (i, float(scores[i]))
+        for i in ranked_indices
+            
     ]
+    max_score = ranked_scores[0][1]
+    relevant_documents = [
+        _documents[i]
+        for i, score in ranked_scores
+        if score >= max_score - 0.15
+    ]
+
+    return relevant_documents[:top_k]
