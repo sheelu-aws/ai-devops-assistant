@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from pathlib import Path
-
+from app.llm import generate_incident_response
 import json
 import os
 import threading
@@ -207,10 +207,29 @@ def health():
     }
 
 
+
 @app.post("/incident")
 def create_incident(incident: Incident):
+
     analysis = analyze_incident(incident.problem)
-    retrieved_knowledge = retrieve_knowledge(incident.problem)
+    
+    retrieved_knowledge = retrieve_knowledge(
+        incident.problem
+    )
+
+    # Generate AI response using Gemini
+    try:
+        ai_response = generate_incident_response(
+            incident=incident.model_dump(),
+            analysis=analysis,
+            retrieved_knowledge=retrieved_knowledge
+        )
+        ai_status = "success"
+
+    except Exception:
+        ai_response = None
+        ai_status = "unavailable"
+
     with storage_lock:
         incidents = load_incidents()
 
@@ -220,17 +239,22 @@ def create_incident(incident: Incident):
             "application": incident.application,
             "problem": incident.problem,
             "environment": incident.environment,
-            "analysis": analysis
+            "analysis": analysis,
+            "ai_response": ai_response,
+            "ai_status": ai_status
         }
 
         incidents.append(record)
         save_incidents(incidents)
 
     return {
-    "message": "Incident analyzed and saved",
-    "incident": record,
-    "retrieved_knowledge": retrieved_knowledge
+        "message": "Incident analyzed and saved",
+        "incident": record,
+        "retrieved_knowledge": retrieved_knowledge,
+        "ai_response": ai_response,
+        "ai_status": ai_status
     }
+
 
 
 
