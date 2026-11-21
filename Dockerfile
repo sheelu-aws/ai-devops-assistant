@@ -17,6 +17,7 @@
 
 #CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
+
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -30,6 +31,6 @@ COPY app/ ./app/
 
 COPY knowledge/ ./knowledge/
 
-EXPOSE 8000
+EXPOSE 10000
 
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python -m uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
