@@ -31,9 +31,13 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run automated tests
+        run: python -m pytest -v tests/test_main.py
+
+      - name: Test Gemini integration
+        if: github.event_name == 'workflow_dispatch'
         env:
-          GEMINI_API_KEY: ${{ github.event_name == 'workflow_dispatch' && secrets.GEMINI_API_KEY || '' }}
-        run: python -m pytest -v
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m pytest -v tests/test_llm.py
 
   docker-build:
     runs-on: ubuntu-latest
