@@ -1,0 +1,406 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI DevOps Incident Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6fb;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 24px 5%;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 25px;
+        }
+
+        header p {
+            color: #cbd5e1;
+            margin-bottom: 0;
+        }
+
+        main {
+            padding: 30px 5%;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card, .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #0000000d;
+        }
+
+        .card h3 {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .card p {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 15px 0 0;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        h2 {
+            font-size: 19px;
+            margin-top: 0;
+        }
+
+        .severity-row {
+            margin: 18px 0;
+        }
+
+        .severity-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-size: 14px;
+        }
+
+        .bar {
+            background: #e2e8f0;
+            height: 9px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 10px;
+            background: #2563eb;
+        }
+
+        .incident-panel {
+            margin-top: 25px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 14px 10px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        th {
+            color: #64748b;
+        }
+
+        .severity {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .Critical {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .High {
+            background: #ffedd5;
+            color: #c2410c;
+        }
+
+        .Medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .Low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        details {
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        .status {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 800px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>AI DevOps Incident Dashboard</h1>
+    <p>Monitor incidents and AI-powered troubleshooting</p>
+</header>
+
+<main>
+
+    <section class="cards">
+        <div class="card">
+            <h3>Total Incidents</h3>
+            <p id="total">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Production Incidents</h3>
+            <p id="production">0</p>
+        </div>
+
+        <div class="card">
+            <h3>High Severity</h3>
+            <p id="high">0</p>
+        </div>
+
+        <div class="card">
+            <h3>Critical Severity</h3>
+            <p id="critical">0</p>
+        </div>
+    </section>
+
+    <section class="content">
+
+        <div class="panel">
+            <h2>Severity Breakdown</h2>
+            <div id="severity-chart">Loading...</div>
+        </div>
+
+        <div class="panel">
+            <h2>Application Summary</h2>
+            <div id="applications">Loading...</div>
+        </div>
+
+    </section>
+
+    <section class="panel incident-panel">
+        <h2>Recent Incidents</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Application</th>
+                    <th>Problem</th>
+                    <th>Environment</th>
+                    <th>Category</th>
+                    <th>Severity</th>
+                    <th>AI Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="incident-list">
+                <tr>
+                    <td colspan="6">Loading incidents...</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p id="status" class="status">Connecting to API...</p>
+    </section>
+
+</main>
+
+<script>
+    async function loadDashboard() {
+        try {
+            const [summaryResponse, incidentsResponse] =
+                await Promise.all([
+                    fetch("/incidents/summary"),
+                    fetch("/incidents")
+                ]);
+
+            if (!summaryResponse.ok || !incidentsResponse.ok) {
+                throw new Error("Unable to fetch dashboard data");
+            }
+
+            const summary = await summaryResponse.json();
+            const data = await incidentsResponse.json();
+
+            document.getElementById("total").textContent =
+                summary.total_incidents;
+
+            document.getElementById("production").textContent =
+                summary.production_incidents;
+
+            const severity = summary.by_severity || {};
+
+            document.getElementById("high").textContent =
+                severity.High || 0;
+
+            document.getElementById("critical").textContent =
+                severity.Critical || 0;
+
+            renderSeverity(severity);
+            renderApplications(summary.by_application || {});
+            renderIncidents(data.incidents || []);
+
+            document.getElementById("status").textContent =
+                "Dashboard data loaded successfully.";
+
+        } catch (error) {
+            document.getElementById("status").textContent =
+                "Error loading dashboard: " + error.message;
+        }
+    }
+
+    function renderSeverity(severity) {
+        const container =
+            document.getElementById("severity-chart");
+
+        container.innerHTML = "";
+
+        const total = Object.values(severity)
+            .reduce((sum, value) => sum + value, 0);
+
+        ["Critical", "High", "Medium", "Low"].forEach(level => {
+            const count = severity[level] || 0;
+            const percentage = total
+                ? (count / total) * 100
+                : 0;
+
+            container.innerHTML += `
+                <div class="severity-row">
+                    <div class="severity-label">
+                        <span>${level}</span>
+                        <strong>${count}</strong>
+                    </div>
+                    <div class="bar">
+                        <div class="fill"
+                             style="width: ${percentage}%">
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function renderApplications(applications) {
+        const container =
+            document.getElementById("applications");
+
+        container.innerHTML = "";
+
+        const entries = Object.entries(applications);
+
+        if (entries.length === 0) {
+            container.textContent = "No application incidents yet.";
+            return;
+        }
+
+        entries.forEach(([name, count]) => {
+            const row = document.createElement("p");
+            row.textContent = `${name}: ${count} incident(s)`;
+            container.appendChild(row);
+        });
+    }
+
+    function renderIncidents(incidents) {
+        const container =
+            document.getElementById("incident-list");
+
+        container.innerHTML = "";
+
+        if (incidents.length === 0) {
+            container.innerHTML =
+                '<tr><td colspan="6">No incidents found.</td></tr>';
+            return;
+        }
+
+        incidents.slice().reverse().forEach(incident => {
+            const row = document.createElement("tr");
+
+            const values = [
+                incident.application,
+                incident.problem,
+                incident.environment,
+                incident.analysis?.category || "Unknown",
+                incident.analysis?.severity || "Unknown",
+                incident.ai_status || "Unknown"
+            ];
+
+            values.forEach((value, index) => {
+                const cell = document.createElement("td");
+
+                if (index === 4) {
+                    const badge = document.createElement("span");
+                    badge.className = "severity " +
+                        String(value).replace(/[^a-z]/gi, "");
+                    badge.textContent = value;
+                    cell.appendChild(badge);
+                } else {
+                    cell.textContent = value;
+                }
+
+                row.appendChild(cell);
+            });
+
+            container.appendChild(row);
+
+            const detailsRow = document.createElement("tr");
+            const detailsCell = document.createElement("td");
+            detailsCell.colSpan = 6;
+
+            const details = document.createElement("details");
+            const heading = document.createElement("summary");
+            heading.textContent = "View AI Analysis";
+
+            const response = document.createElement("pre");
+            response.style.whiteSpace = "pre-wrap";
+            response.style.overflowWrap = "anywhere";
+            response.textContent =
+                incident.ai_response || "AI response unavailable.";
+
+            details.appendChild(heading);
+            details.appendChild(response);
+            detailsCell.appendChild(details);
+            detailsRow.appendChild(detailsCell);
+            container.appendChild(detailsRow);
+        });
+    }
+
+    loadDashboard();
+</script>
+
+</body>
+</html>
