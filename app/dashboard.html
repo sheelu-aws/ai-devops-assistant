@@ -399,7 +399,11 @@
         });
     }
 
-    loadDashboard();
+    // Load dashboard immediately
+loadDashboard();
+
+// Automatically refresh dashboard every 30 seconds
+setInterval(loadDashboard, 30000);
 </script>
 
 </body>
