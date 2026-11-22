@@ -1,9 +1,11 @@
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 from datetime import datetime, timezone
 from pathlib import Path
 from app.llm import generate_incident_response
+
 import json
 import os
 import threading
