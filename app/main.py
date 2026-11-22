@@ -194,7 +194,13 @@ def analyze_incident(problem: str):
             "Inspect service and resource metrics"
         ]
     }
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard():
+    dashboard_file = Path(__file__).parent / "dashboard.html"
 
+    return HTMLResponse(
+        content=dashboard_file.read_text(encoding="utf-8")
+    )
 @app.get("/")
 def home():
     return {
