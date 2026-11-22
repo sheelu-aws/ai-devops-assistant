@@ -244,11 +244,13 @@
 <script>
     async function loadDashboard() {
         try {
+            
             const [summaryResponse, incidentsResponse] =
-                await Promise.all([
-                    fetch("/incidents/summary"),
-                    fetch("/incidents")
-                ]);
+            await Promise.all([
+            fetch("/incidents/summary", { cache: "no-store" }),
+            fetch("/incidents", { cache: "no-store" })
+             ]);
+
 
             if (!summaryResponse.ok || !incidentsResponse.ok) {
                 throw new Error("Unable to fetch dashboard data");
