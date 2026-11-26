@@ -28,7 +28,7 @@ def load_knowledge():
     ]
 
 
-def retrieve_knowledge(query: str, top_k: int = 2):
+def retrieve_knowledge(query: str, top_k: int = 4):
     """Retrieve relevant documents using keyword matching."""
 
     global _documents
