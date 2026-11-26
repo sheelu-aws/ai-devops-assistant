@@ -80,10 +80,30 @@ def save_incidents(incidents):
         ) from exc
 
 
+
 def analyze_incident(problem: str):
     problem_lower = problem.lower()
 
-    # Gateway and HTTP errors
+    # Step 1: Identify critical production incidents
+    critical_keywords = [
+        "complete production outage",
+        "production outage",
+        "complete outage",
+        "all transactions are failing",
+        "all requests are failing",
+        "service is down",
+        "total outage",
+        "oomkilled",
+        "out of memory",
+        "memory exhaustion"
+    ]
+
+    is_critical = any(
+        keyword in problem_lower
+        for keyword in critical_keywords
+    )
+
+    # Step 2: Gateway and HTTP errors
     if any(keyword in problem_lower for keyword in [
         "502",
         "bad gateway",
@@ -96,7 +116,7 @@ def analyze_incident(problem: str):
     ]):
         return {
             "category": "Gateway Error",
-            "severity": "High",
+            "severity": "Critical" if is_critical else "High",
             "possible_causes": [
                 "Backend service is unavailable",
                 "Application is returning errors",
@@ -110,7 +130,7 @@ def analyze_incident(problem: str):
             ]
         }
 
-    # High CPU
+    # Step 3: High CPU
     if any(keyword in problem_lower for keyword in [
         "cpu",
         "high load",
@@ -119,7 +139,7 @@ def analyze_incident(problem: str):
     ]):
         return {
             "category": "High CPU",
-            "severity": "High",
+            "severity": "Critical" if is_critical else "High",
             "possible_causes": [
                 "Heavy application workload",
                 "Inefficient code or repeated requests",
@@ -133,7 +153,7 @@ def analyze_incident(problem: str):
             ]
         }
 
-    # Memory issues
+    # Step 4: Memory issues
     if any(keyword in problem_lower for keyword in [
         "out of memory",
         "oom",
@@ -157,7 +177,7 @@ def analyze_incident(problem: str):
             ]
         }
 
-    # Kubernetes image pull errors
+    # Step 5: Kubernetes image pull errors
     if any(keyword in problem_lower for keyword in [
         "imagepullbackoff",
         "errimagepull",
@@ -182,6 +202,7 @@ def analyze_incident(problem: str):
             ]
         }
 
+    # Step 6: Unknown incident
     return {
         "category": "Unknown Incident",
         "severity": "Medium",
@@ -194,6 +215,7 @@ def analyze_incident(problem: str):
             "Inspect service and resource metrics"
         ]
     }
+
 @app.get("/dashboard", response_class=HTMLResponse)
 def dashboard():
     dashboard_file = Path(__file__).parent / "dashboard.html"
