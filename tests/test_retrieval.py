@@ -1,3 +1,4 @@
+
 from app.retrieval import load_knowledge, retrieve_knowledge
 
 
@@ -33,3 +34,19 @@ def test_retrieve_image_pull_knowledge():
 
     assert len(results) > 0
     assert "Kubernetes ImagePullBackOff" in results[0]
+
+
+def test_retrieve_multiple_symptoms():
+    query = (
+        "Production application has CPU utilization at 95%, "
+        "memory usage above 95%, pods restarting with OOMKilled, "
+        "and users receiving HTTP 503 errors."
+    )
+
+    results = retrieve_knowledge(query, top_k=4)
+
+    combined_results = "\n".join(results)
+
+    assert "High CPU Usage" in combined_results
+    assert "Memory Issues" in combined_results
+    assert "HTTP 502 Bad Gateway" in combined_results
